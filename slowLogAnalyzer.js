@@ -4,16 +4,26 @@ const readline = require("readline");
 const fs = require("fs");
 const moment = require("moment");
 
-const fileToRead = process.argv[2];
 const queryTimingsCSVFilename = "query-timings-mysql.csv";
 const connectionsCSVFilename = "connections-mysql.csv";
 
 
-async function main() {
-  console.log(`Reading ${fileToRead}...`);
+async function slowLogAnalyzer() {
+  const firstArg = process.argv[2];
+  if(process.argv.length !== 3
+    || firstArg ==="-h"
+    || firstArg ==="--help"
+    || firstArg ==="-?")
+  {
+    console.log("\nMySQL Slow Log Analyzer help:\n\n");
+    console.log("node slowLogAnalyzer.js <filename-of-slow-query-log.log>");
+    process.exit(1);
+  }
+
+  console.log(`Reading ${firstArg}...`);
 
   const readInterface = readline.createInterface({
-    input: fs.createReadStream(fileToRead),
+    input: fs.createReadStream(firstArg),
     console: false
   });
 
@@ -130,4 +140,4 @@ function writeConnectionsCSV(queryToTimingsMap) {
   wstream.end();
 }
 
-main();
+slowLogAnalyzer();

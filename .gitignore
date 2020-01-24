@@ -1,4 +1,6 @@
 node_modules
+query-timings-mysql.csv
+connections-mysql.csv
 
 # IDEA
 # ----
