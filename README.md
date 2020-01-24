@@ -3,7 +3,7 @@ MySQL Slow Log Analyzer
 
 This tool runs on NodeJS and helps you determine why a MySQL database is running slowly or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that can be used to get to the root cause of most problems.
 
-##Screenshots
+## Screenshots
 
 This is what you'll end up with after using this package:
 
