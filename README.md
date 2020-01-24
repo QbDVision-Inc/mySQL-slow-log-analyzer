@@ -73,8 +73,8 @@ Steps:
 * Create a new spreadsheet 
 * Under the `File` menu choose `Import`
 * Choose the Upload tab and select the first file, `query-timings-mysql.csv`
-  * Use the following options:
-    ![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile.png?raw=true)
+  * Use the following options:  
+      ![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile.png?raw=true)
 * Now you have a spreadsheet! Space out the columns so you can read the headers.
 * Select the whole spreadsheet and click on `Data -> Create a filter`
 
