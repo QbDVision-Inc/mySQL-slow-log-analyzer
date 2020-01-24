@@ -1,7 +1,7 @@
 MySQL Slow Log Analyzer
 =================
 
-This tool runs on NodeJS and helps you determine why a MySQL database (including an AWS Aurora RDS DB)is running slowly or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that can be used to get to the root cause of most problems.
+This tool runs on NodeJS and helps you determine why a MySQL database (including an AWS Aurora RDS DB) is running slowly or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that can be used to get to the root cause of most problems.
 
 ## Screenshots
 
