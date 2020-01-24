@@ -101,24 +101,27 @@ If you find your MySQL DB is running out of memory, rebooting often or perhaps t
 
 MySQL uses memory in 2 different ways:
 1. A general pool for INNODB to cache results to queries, cache indexes and datable data in memory, etc.
-    * To see how much memory the INNODB cache is using (in MB): 
+    * To see how much memory the overal DB cache is using (in MB): 
        ```
-       select @@innodb_buffer_pool_size/(1024*1024);
+       select (@@key_buffer_size
+             + @@query_cache_size
+             + @@innodb_buffer_pool_size
+             + @@innodb_log_buffer_size
+             + @@max_allowed_packet)/(1024*1024);
        ```
 1. A per-thread amount to give each thread so they have space to load tables & compute things that aren't already answered in the general pool (#1) above.
 Usually in RDS each thread gets around 17.5 MB of memory.  Run the following to see exactly how many MB/connection your DB is configured to use:
- ```
-select (@@read_buffer_size
-      + @@read_rnd_buffer_size
-      + @@sort_buffer_size
-      + @@join_buffer_size
-      + @@binlog_cache_size
-      + @@net_buffer_length
-      + @@net_buffer_length
-      + @@thread_stack
-      + @@tmp_table_size)/(1024*1024);
-
- ```
+   ```
+   select (@@read_buffer_size
+         + @@read_rnd_buffer_size
+         + @@sort_buffer_size
+         + @@join_buffer_size
+         + @@binlog_cache_size
+         + @@net_buffer_length
+         + @@net_buffer_length
+         + @@thread_stack
+         + @@tmp_table_size)/(1024*1024);
+   ```
 Read more on how to calculate all of the memory things [here](https://dba.stackexchange.com/a/256104/24545).
 
 So each connection uses another 17.5 MB of ram.  If you have 100 connections, that's 1.7GB of RAM being used for those connections.  Look for code causing connection spikes and you'll figure out why your database is rebooting.
