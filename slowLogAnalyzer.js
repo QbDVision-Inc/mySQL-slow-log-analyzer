@@ -10,20 +10,26 @@ const connectionsCSVFilename = "connections-mysql.csv";
 
 async function slowLogAnalyzer() {
   const firstArg = process.argv[2];
-  if(process.argv.length !== 3
-    || firstArg ==="-h"
-    || firstArg ==="--help"
-    || firstArg ==="-?")
-  {
+  if ((process.argv.length < 3 || process.argv.length > 4)
+    || firstArg === "-h"
+    || firstArg === "--help"
+    || firstArg === "-?") {
     console.log("\nMySQL Slow Log Analyzer help:\n\n");
-    console.log("node slowLogAnalyzer.js <filename-of-slow-query-log.log>");
+    console.log("node slowLogAnalyzer.js [--cloudwatch-format] <filename-of-slow-query-log.log>");
     process.exit(1);
   }
 
-  console.log(`Reading ${firstArg}...`);
+  let cloudwatchFormat = firstArg === "--cloudwatch-format";
+  let filename;
+  if (cloudwatchFormat) {
+    filename = process.argv[3];
+  } else {
+    filename = firstArg;
+  }
+  console.log(`Reading ${filename}...`);
 
   const readInterface = readline.createInterface({
-    input: fs.createReadStream(firstArg),
+    input: fs.createReadStream(filename),
     console: false
   });
 
@@ -33,7 +39,7 @@ async function slowLogAnalyzer() {
   let linesReadSoFar = 0;
   readInterface.on("line", line => {
     linesReadSoFar++;
-    if (line.startsWith("# Time:")) {
+    if (cloudwatchFormat ? line.includes("# Time:") : line.startsWith("# Time:")) {
       // Commit this query to the map
       let query = currentTiming.query;
       if (query) {
@@ -87,13 +93,16 @@ function cleanUpQuery(query) {
 
   // Convert all strings to ?
   cleanQuery = cleanQuery.replace(/'[^']*'/g, "?");
+
+  // Remove trailing double quotes
+  cleanQuery = cleanQuery.replace(/(.*)"$/, "$1");
   return cleanQuery;
 }
 
 function writeTimingsCSV(queryToTimingsMap) {
   console.log("Writing timings to " + queryTimingsCSVFilename);
   let wstream = fs.createWriteStream(queryTimingsCSVFilename, {encoding: "utf8"});
-  wstream.write(`"Total Time","Total Query Time","Total Lock Time","Count","Query"\n`);
+  wstream.write(`"Total Time","Total Query Time","Total Lock Time","Average Time","Count","Query"\n`);
 
   // Arrange the data
   const values = queryToTimingsMap.values();
@@ -101,9 +110,13 @@ function writeTimingsCSV(queryToTimingsMap) {
 
   // Write to the CSV file
   for (const timing of sortedByTime) {
-    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.count},"${timing.query}"\n`);
+    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.totalTime/timing.count},${timing.count},"${escapeQuotes(timing.query)}"\n`);
   }
   wstream.end();
+}
+
+function escapeQuotes(someText) {
+  return someText.replace(/"/g, '""');
 }
 
 function writeConnectionsCSV(queryToTimingsMap) {
