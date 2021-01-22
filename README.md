@@ -85,10 +85,10 @@ Steps:
 * Select the whole spreadsheet and click on `Data -> Create a filter`
 
 Now you can sort by any column you want. Here are what the columns mean:
-* **Total Time** - The total time it took for all queries of this type before returning back the data. It is the sum of `Total Query Time` and `Total Lock Time`.
-* **Total Query Time** - The total time it took MySQL to figure out the answer to the query.
-* **Total Lock Time** - The total time MySQL waited while another transaction had a row/table locked that it needed.
-* **Average Time** - The average time for a query (ex. `Total Time / Count`).
+* **Total Time** - The total time, in seconds, it took for all queries of this type before returning back the data. It is the sum of `Total Query Time` and `Total Lock Time`.
+* **Total Query Time** - The total time, in seconds, it took MySQL to figure out the answer to the query.
+* **Total Lock Time** - The total time, in seconds, MySQL waited while another transaction had a row/table locked that it needed.
+* **Average Time** - The average time, in seconds, for a query (ex. `Total Time / Count`).
 * **Count** - The number of times this query was called.
 * **Query** - The query being run.  
   * This program will convert queries to being more generic by taking out numbers and strings and converting them to question marks (`?`). 
@@ -96,7 +96,11 @@ Now you can sort by any column you want. Here are what the columns mean:
 
 ## Import the connection count into a spreadsheet
 
-Follow the same instructions for importing the CSV into the same Google Sheet in a new sheet (tab). In addition, select the first 2 columns (A and B) and choose from the menu `Insert -> Chart`. You should see a chart like this now:
+Follow the same instructions for importing the CSV into the same Google Sheet in a new sheet (tab). In addition, select the first 2 columns (A and B) and choose from the menu `Insert -> Chart`. Configure your chart so that the "Connection Count" is on the Y axis and "Time" is on the X-axis, like so:
+
+![Chart configuration](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-Charting.png?raw=true)
+
+You should see a chart like this now:
 
 ![A chart of connections](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/ConnectionsChart.png?raw=true)
 

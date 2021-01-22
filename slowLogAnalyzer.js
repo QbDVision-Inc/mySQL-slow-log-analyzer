@@ -39,6 +39,10 @@ async function slowLogAnalyzer() {
   let linesReadSoFar = 0;
   readInterface.on("line", line => {
     linesReadSoFar++;
+    if (linesReadSoFar % 10000 === 0) {
+      console.log(`${linesReadSoFar.toLocaleString()} lines read so far. Unique queries found: ${queryToTimingsMap.size.toLocaleString()}...`);
+    }
+
     if (cloudwatchFormat ? line.includes("# Time:") : line.startsWith("# Time:")) {
       // Commit this query to the map
       let query = currentTiming.query;
@@ -66,6 +70,9 @@ async function slowLogAnalyzer() {
     } else if (line.startsWith("SET timestamp=")) {
       const match = line.match(/SET timestamp=([0-9]+)/);
       currentTiming.unixTimestamp = parseInt(match[1]);
+    } else if (line.startsWith("# Thread_id:")) {
+      const match = line.match(/# Thread_id: *([0-9]+)/);
+      currentTiming.connectionId = parseInt(match[1]);
     } else if (line.startsWith("# User@Host")) {
       const match = line.match(/# User@Host: .* Id: *([0-9]+)/);
       currentTiming.connectionId = parseInt(match[1]);
@@ -110,7 +117,7 @@ function writeTimingsCSV(queryToTimingsMap) {
 
   // Write to the CSV file
   for (const timing of sortedByTime) {
-    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.totalTime/timing.count},${timing.count},"${escapeQuotes(timing.query)}"\n`);
+    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.totalTime / timing.count},${timing.count},"${escapeQuotes(timing.query)}"\n`);
   }
   wstream.end();
 }
