@@ -69,6 +69,7 @@ And you should see the help text.
 
 ## Convert your slow query log
 
+### If it's a .log file
 Run the analyzer with your file. Here I'm analyzing `mysql-slowquery.log` which I've copied into the same directory, but it could be in a different place.
 ```shell script
 C:\temp\MySQLSlowLogAnalyzer> node slowLogAnalyzer.js mysql-slowquery.log
@@ -79,6 +80,14 @@ Writing connections to connections-mysql.csv
 C:\temp\MySQLSlowLogAnalyzer>
 ```
 Two files were created: `query-timings-mysql.csv` and `connections-mysql.csv`.
+
+### If it's a .csv file
+If you have a csv file, use the `--cloudwatch-format` flag. Here I'm analyzing `log-insights-results.csv`.
+```shell
+node slowLogAnalyzer.js --cloudwatch-format log-insights-results.csv
+```
+
+Again, the same files (`query-timings-mysql.csv` and `connections-mysql.csv`) should be created.
 
 ## Import the query timings into a spreadsheet
 
