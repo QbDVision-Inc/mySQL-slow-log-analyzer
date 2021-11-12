@@ -7,6 +7,7 @@ This tool can be used to get to the root cause of problems such as:
 * Dropped connections
 * Connection Timeout Exceptions under heavy load
 * Running out of Memory under load
+* Unexpected database reboots (related to memory dropping)
 
 This tool runs on NodeJS and helps you determine why a MySQL database (including an AWS Aurora RDS DB or Aurora RDS Serverless DB) is running slowly, seeing deadlock or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that tell you what's going on under the hood.
 
