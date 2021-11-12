@@ -32,15 +32,15 @@ You can read more about these settings [here](https://dev.mysql.com/doc/refman/5
 
 If you want to set these manually, [run these SQL statements](https://stackoverflow.com/a/22609627/491553).
 
-## Get some data
+## Create some data in MySQL's slow query log
 
-This is the easiest step. Run some tests, let users do something manual or just wait for a few hours.
+This is the step that you probably know best. Run some tests, let users do something manual or just wait for a few hours.
 
 ## Download the data
 
 If you're using plain old RDS, you can download the slow log file(s) from the RDS console pictured above. If you have multiple log files, you can open them in a text editor (ex. notepad) and cut and paste them all into one big file.
 
-If you're using RDS Serverless, the log files aren't available there and you'll have to get them out of cloudwatch. Look for a log group that looks like `/aws/rds/cluster/<your-DB-Name->/slowquery`. Use the "Log Insights" query engine to query your log group and then download the results (go to `Export Results` -> `Download table (CSV)`). 
+If you're using RDS Serverless, the log files aren't available there and you'll have to get them out of cloudwatch. Look for a log group that looks like `/aws/rds/cluster/<your-DB-Name->/slowquery`. Use the "Log Insights" query engine to query your log group and then download the results (go to `Export Results` -> `Download table (CSV)`). If you have a ton of data (i.e. > 10,000 SQL statements), you'll probably need to extract it by [exporting the Cloudwatch logs to S3](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/S3ExportTasksConsole.html).
 
 If your results are in CSV format, that's fine. Make sure to use the `--cloudwatch-format` option when running the `slowLogAnalyzer.js` program below.
 
