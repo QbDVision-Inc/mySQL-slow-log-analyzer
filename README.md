@@ -1,11 +1,18 @@
 MySQL Slow Log Analyzer
 =================
 
-This tool runs on NodeJS and helps you determine why a MySQL database (including an AWS Aurora RDS DB) is running slowly or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that can be used to get to the root cause of most problems.
+This tool can be used to get to the root cause of problems such as:
+* Slow queries
+* Transaction issues (ex. Deadlock)
+* Dropped connections
+* Connection Timeout Exceptions under heavy load
+* Running out of Memory under load
+
+This tool runs on NodeJS and helps you determine why a MySQL database (including an AWS Aurora RDS DB or Aurora RDS Serverless DB) is running slowly, seeing deadlock or running out of memory. Specifically, it converts a MySQL slow query log into a set of CSV files that tell you what's going on under the hood.
 
 ## Screenshots
 
-This is what you'll end up with after using this package:
+This is what you'll end up with after using this package (columns are [described down below](#column-descriptions)):
 
 ![Queries Google Spreadsheet](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/Screenshot1-Queries.png?raw=true)
 ![Connections Google Spreadsheet](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/Screenshot2-Connections.png?raw=true)
@@ -32,7 +39,9 @@ This is the easiest step. Run some tests, let users do something manual or just 
 
 If you're using plain old RDS, you can download the slow log file(s) from the RDS console pictured above. If you have multiple log files, you can open them in a text editor (ex. notepad) and cut and paste them all into one big file.
 
-If you're using RDS Serverless, the log files aren't available there and you'll have to get them out of cloudwatch. Look for a log group that looks like `/aws/rds/cluster/<your-DB-Name->/slowquery`. Use the Cloudwatch Insights query engine to query your log group and then download the results (go to `Export Results` -> `Download table (CSV)`). If your results are in CSV format, you'll want to use the `--cloudwatch-format` option.
+If you're using RDS Serverless, the log files aren't available there and you'll have to get them out of cloudwatch. Look for a log group that looks like `/aws/rds/cluster/<your-DB-Name->/slowquery`. Use the "Log Insights" query engine to query your log group and then download the results (go to `Export Results` -> `Download table (CSV)`). 
+
+If your results are in CSV format, that's fine. Make sure to use the `--cloudwatch-format` option when running the `slowLogAnalyzer.js` program below.
 
 
 ## Download NodeJS and this program
@@ -83,6 +92,8 @@ Steps:
       ![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile.png?raw=true)
 * Now you have a spreadsheet! Space out the columns so you can read the headers.
 * Select the whole spreadsheet and click on `Data -> Create a filter`
+
+## Column Descriptions
 
 Now you can sort by any column you want. Here are what the columns mean:
 * **Total Time** - The total time, in seconds, it took for all queries of this type before returning back the data. It is the sum of `Total Query Time` and `Total Lock Time`.
