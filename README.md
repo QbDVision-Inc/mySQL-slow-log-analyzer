@@ -65,7 +65,17 @@ Now run
 node slowLogAnalyzer.js
 ```
 
-And you should see the help text.
+And you should see the help text:
+```shell
+C:\temp\MySQLSlowLogAnalyzer> node slowLogAnalyzer.js
+
+MySQL Slow Log Analyzer help:
+
+
+node slowLogAnalyzer.js [--cloudwatch-format] <filename-of-slow-query-log.log>
+
+C:\temp\MySQLSlowLogAnalyzer>
+```
 
 ## Convert your slow query log
 
@@ -102,7 +112,7 @@ Steps:
 * Now you have a spreadsheet! Space out the columns so you can read the headers.
 * Select the whole spreadsheet and click on `Data -> Create a filter`
 
-## Column Descriptions
+### Column Descriptions
 
 Now you can sort by any column you want. Here are what the columns mean:
 * **Total Time** - The total time, in seconds, it took for all queries of this type before returning back the data. It is the sum of `Total Query Time` and `Total Lock Time`.
@@ -116,7 +126,13 @@ Now you can sort by any column you want. Here are what the columns mean:
 
 ## Import the connection count into a spreadsheet
 
-Follow the same instructions for importing the CSV into the same Google Sheet in a new sheet (tab). In addition, select the first 2 columns (A and B) and choose from the menu `Insert -> Chart`. Configure your chart so that the "Connection Count" is on the Y axis and "Time" is on the X-axis, like so:
+Follow the same instructions for importing the `query-timings-mysql.csv` CSV into the same Google Sheet but this time do it for `connections-mysql.csv` in a new sheet (tab). Import it with these settings:
+![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile2.png?raw=true)
+
+### Create a chart of connections
+__Note: Don't skip this because you're trying to debug a memory problem.__ Read more about why [below](#wait-what-does-the-connection-count-have-to-do-with-running-out-of-memory).
+
+Select the first 2 columns (A and B) of your new `connections-mysql` tab and choose from the menu `Insert -> Chart`. Configure your chart so that the "Connection Count" is on the Y axis and "Time" is on the X-axis, like so:
 
 ![Chart configuration](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-Charting.png?raw=true)
 

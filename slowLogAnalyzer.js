@@ -7,6 +7,10 @@ const moment = require("moment");
 const queryTimingsCSVFilename = "query-timings-mysql.csv";
 const connectionsCSVFilename = "connections-mysql.csv";
 
+/**
+ * Google sheets allows a maximum of 50k characters in a cell.
+ */
+const MAX_CELL_STRING_LENGTH = 50000;
 
 async function slowLogAnalyzer() {
   const firstArg = process.argv[2];
@@ -81,6 +85,7 @@ async function slowLogAnalyzer() {
       || line.startsWith("use ")
       || line.startsWith("/* ")
       || line.startsWith("/rdsdbbin")
+      || line.startsWith("@timestamp,@message")
       || line.startsWith("Time         ")) {
       // Ignore
     } else {
@@ -117,13 +122,19 @@ function writeTimingsCSV(queryToTimingsMap) {
 
   // Write to the CSV file
   for (const timing of sortedByTime) {
-    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.totalTime / timing.count},${timing.count},"${escapeQuotes(timing.query)}"\n`);
+    wstream.write(`${timing.totalTime},${timing.queryTime},${timing.lockTime},${timing.totalTime / timing.count},${timing.count},"${cleanStringForCSV(timing.query)}"\n`);
   }
   wstream.end();
 }
 
-function escapeQuotes(someText) {
-  return someText.replace(/"/g, '""');
+/**
+ * This function make sure that Google Sheets/Excel can read the text.
+ */
+function cleanStringForCSV(someText) {
+  let returnVal = someText.replace(/"/g, '""');
+  return returnVal.length > MAX_CELL_STRING_LENGTH ?
+    returnVal.substring(0, MAX_CELL_STRING_LENGTH - 3) + "..." :
+    returnVal;
 }
 
 function writeConnectionsCSV(queryToTimingsMap) {
@@ -155,7 +166,7 @@ function writeConnectionsCSV(queryToTimingsMap) {
   // Write to the CSV file
   wstream.write(`"Time","Connection Count","Queries"\n`);
   for (const timing of sortedByTime) {
-    wstream.write(`${moment.unix(timing.unixTimestamp).format("YYYY-MM-DD HH:mm:ss")},${timing.count},"${timing.queries.join("\n")}"\n`);
+    wstream.write(`${moment.unix(timing.unixTimestamp).format("YYYY-MM-DD HH:mm:ss")},${timing.count},"${cleanStringForCSV(timing.queries.join("\n"))}"\n`);
   }
   wstream.end();
 }
