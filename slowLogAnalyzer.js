@@ -1,6 +1,6 @@
 "use strict";
 
-const readline = require("readline");
+const LineByLineReader = require('line-by-line');
 const fs = require("fs");
 const moment = require("moment");
 
@@ -32,19 +32,23 @@ async function slowLogAnalyzer() {
   }
   console.log(`Reading ${filename}...`);
 
-  const readInterface = readline.createInterface({
-    input: fs.createReadStream(filename),
-    console: false
-  });
+  const lineReader = new LineByLineReader(filename);
 
   let queryToTimingsMap = new Map();
 
   let currentTiming = {count: 1, query: ""};
   let linesReadSoFar = 0;
-  readInterface.on("line", line => {
+  let startTime = Date.now();
+  lineReader.on("error", error => {
+    console.error("Error:", error);
+  })
+  lineReader.on("line", line => {
+    lineReader.pause();
     linesReadSoFar++;
     if (linesReadSoFar % 10000 === 0) {
-      console.log(`${linesReadSoFar.toLocaleString()} lines read so far. Unique queries found: ${queryToTimingsMap.size.toLocaleString()}...`);
+      const timeSoFar = (Date.now() - startTime) / 1000;
+      console.log(`${linesReadSoFar.toLocaleString()} lines read so far. Unique queries found: ${queryToTimingsMap.size.toLocaleString()}. Time taken: ${timeSoFar.toFixed(3).toLocaleString()}s`);
+      startTime = Date.now();
     }
 
     if (cloudwatchFormat ? line.includes("# Time:") : line.startsWith("# Time:")) {
@@ -91,11 +95,13 @@ async function slowLogAnalyzer() {
     } else {
       currentTiming.query += line;
     }
-  })
-    .on("close", () => {
-      writeTimingsCSV(queryToTimingsMap);
-      writeConnectionsCSV(queryToTimingsMap);
-    });
+    lineReader.resume();
+  });
+
+  lineReader.on("end", () => {
+    writeTimingsCSV(queryToTimingsMap);
+    writeConnectionsCSV(queryToTimingsMap);
+  });
 }
 
 function cleanUpQuery(query) {
@@ -107,7 +113,9 @@ function cleanUpQuery(query) {
   cleanQuery = cleanQuery.replace(/'[^']*'/g, "?");
 
   // Remove trailing double quotes
-  cleanQuery = cleanQuery.replace(/(.*)"$/, "$1");
+  if(cleanQuery.endsWith("\"")) {
+    cleanQuery = cleanQuery.substring(0, cleanQuery.length-2);
+  }
   return cleanQuery;
 }
 

@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "line-by-line": "^0.1.6",
     "moment": "^2.24.0"
   }
 }

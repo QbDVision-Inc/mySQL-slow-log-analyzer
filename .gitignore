@@ -1,5 +1,11 @@
-node_modules
+# Files that are probably for input/output processing
+# ----
 /*.csv
+/000*
+
+# Node modules (installed libraries)
+# ----
+node_modules
 
 # IDEA
 # ----
