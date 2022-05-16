@@ -15,14 +15,14 @@ This tool runs on NodeJS and helps you determine why a MySQL database (including
 
 This is what you'll end up with after using this package (columns are [described down below](#column-descriptions)):
 
-![Queries Google Spreadsheet](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/Screenshot1-Queries.png?raw=true)
-![Connections Google Spreadsheet](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/Screenshot2-Connections.png?raw=true)
+![Queries Google Spreadsheet](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/Screenshot1-Queries.png?raw=true)
+![Connections Google Spreadsheet](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/Screenshot2-Connections.png?raw=true)
 
 ## First get a slow query log
 
 To get started, turn on the slow query log in your DB. Here is a video of turning on the slow query log using a clustered AWS Aurora MySQL RDS Database:
 
-![Video showing how to configure the MySQL parameters](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/Configuring-RDS-MySQL-Slow-Log.gif?raw=true)
+![Video showing how to configure the MySQL parameters](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/Configuring-RDS-MySQL-Slow-Log.gif?raw=true)
 
 After clicking "Save changes" the database will reboot. If you want just the reader/writer to be logged, then follow the same video but click on the DB at the start instead of the cluster. Configuring it at the cluster produces multiple files (one for each reader/writer instance).
 
@@ -56,7 +56,7 @@ v10.16.3
 Now clone this repository:
 ```shell script
 cd \temp              (or cd /tmp on Linux)
-git clone https://github.com/CherryCircle/MySQLSlowLogAnalyzer.git
+git clone https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer.git
 cd MySQLSlowLogAnalyzer
 npm install
 ```
@@ -109,7 +109,7 @@ Steps:
 * Under the `File` menu choose `Import`
 * Choose the Upload tab and select the first file, `query-timings-mysql.csv`
   * Use the following options:  
-      ![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile.png?raw=true)
+      ![Google Sheets Import File Options](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile.png?raw=true)
 * Now you have a spreadsheet! Space out the columns so you can read the headers.
 * Select the whole spreadsheet and click on `Data -> Create a filter`
 
@@ -128,18 +128,18 @@ Now you can sort by any column you want. Here are what the columns mean:
 ## Import the connection count into a spreadsheet
 
 Follow the same instructions for importing the `query-timings-mysql.csv` CSV into the same Google Sheet but this time do it for `connections-mysql.csv` in a new sheet (tab). Import it with these settings:
-![Google Sheets Import File Options](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile2.png?raw=true)
+![Google Sheets Import File Options](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-ImportFile2.png?raw=true)
 
 ### Create a chart of connections
 __Note: Don't skip this because you're trying to debug a memory problem.__ Read more about why [below](#wait-what-does-the-connection-count-have-to-do-with-running-out-of-memory).
 
 Select the first 2 columns (A and B) of your new `connections-mysql` tab and choose from the menu `Insert -> Chart`. Configure your chart so that the "Connection Count" is on the Y axis and "Time" is on the X-axis, like so:
 
-![Chart configuration](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-Charting.png?raw=true)
+![Chart configuration](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/GoogleSheets-Charting.png?raw=true)
 
 You should see a chart like this now:
 
-![A chart of connections](https://github.com/CherryCircle/MySQLSlowLogAnalyzer/blob/master/images/ConnectionsChart.png?raw=true)
+![A chart of connections](https://github.com/QbDVision-Inc/MySQLSlowLogAnalyzer/blob/master/images/ConnectionsChart.png?raw=true)
 
 If you find your MySQL DB is running out of memory, rebooting often or perhaps throwing "SQL Error 1040: Too Many Connection" errors, this chart will be invaluable. You can see at what time the connection spiked, scroll down to that line and see all of the queries that were running at that time. If you see a steady climb of connections then you're not closing your connections correctly.
 
